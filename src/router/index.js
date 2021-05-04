@@ -1,19 +1,60 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+import Welcome from '../views/Welcome.vue'
+import Menu from '../views/Menu.vue'
+import Contact from '../views/Contact.vue'
+import Admin from '../views/Admin.vue'
+import ThankYou from '../views/ThankYou.vue'
+import { projectAuth } from '../firebase/config'
+
+// auth guard
+const requireAuth = (to, from, next) => {
+  let user = projectAuth.currentUser
+  if (!user) {
+    next({ name: 'Welcome' })
+  } else {
+    next()
+  }
+}
+
+const requireNoAuth = (to, from, next) => {
+  let user = projectAuth.currentUser
+  if (user) {
+    next({ name: 'Menu' })
+  } else {
+    next()
+  }
+}
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    name: 'Welcome',
+    component: Welcome,
+    beforeEnter: requireNoAuth
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/menu',
+    name: 'Menu',
+    component: Menu,
+    beforeEnter: requireAuth
+  },
+  {
+    path: '/contact-form',
+    name: 'Contact',
+    component: Contact,
+    beforeEnter: requireAuth
+  },
+  {
+    path: '/admin',
+    name: 'Admin',
+    component: Admin,
+    beforeEnter: requireAuth
+  },
+  {
+    path: '/thank-you',
+    name: 'ThankYou',
+    component: ThankYou,
+    beforeEnter: requireAuth
   }
 ]
 
